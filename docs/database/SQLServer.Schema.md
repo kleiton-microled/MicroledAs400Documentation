@@ -365,27 +365,9 @@ As tabelas de outbox e interface de tickets utilizam campos de status para contr
 
 ---
 
-### 4.4 Recepção de Ticket
+### 4.4 Fluxo de Tickets
 
-**Fluxo**: `POST /api/tickets` → `TicketService` → `SqlServerTicketRepository`
-
-**Tabelas Envolvidas**:
-1. **TB_TICKET_INTERFACE**: Grava/atualiza ticket (idempotência por `(BusinessEntity, BusinessDocId, PhaseCode)`)
-   - Status inicial: `Awaiting`
-   - `RawPayloadJson`: Armazena JSON completo do ticket recebido
-
----
-
-### 4.5 Processamento de Ticket (Worker)
-
-**Fluxo**: `TicketProcessingWorker` (background service) → `SqlServerTicketRepository` → Processamento → Atualização de Status
-
-**Tabelas Envolvidas**:
-1. **TB_TICKET_INTERFACE**: 
-   - `DequeueAwaitingAsync`: Busca tickets com `Status = 'Awaiting'` e `AttemptCount < MaxAttempts`
-   - Atualiza status para `Processing` → `Processed` ou `Error`
-   - Incrementa `AttemptCount` a cada tentativa
-   - Após processamento bem-sucedido, enfileira retorno em `TB_TICKET_RETURN_OUTBOX`
+Para o fluxo completo de tickets (recepção, processamento, retorno e gateway/callback), ver **[TICKETS_API.md](../TICKETS_API.md)**.
 
 ---
 
@@ -400,30 +382,6 @@ As tabelas de outbox e interface de tickets utilizam campos de status para contr
    - Atualiza status para `Sent` ou `Error` conforme resultado do envio HTTP
 
 ---
-
-### 4.7 Envio de Ticket Return
-
-**Fluxo**: `TicketProcessingWorker` → `TicketReturnOutboxRepository` → `TicketReturnOutboxWorker` (background service)
-
-**Tabelas Envolvidas**:
-1. **TB_TICKET_RETURN_OUTBOX**: 
-   - `EnqueueAsync`: Grava mensagem com status `Pending` (após verificar duplicidade via `ExistsSentAsync`)
-   - `DequeuePendingAsync`: Worker busca mensagens pendentes
-   - Atualiza status para `Sent` ou `Error` conforme resultado do envio HTTP
-2. **TB_TICKET_INTERFACE**: 
-   - Atualiza campos `ReturnStatus`, `ReturnAttemptCount`, `ReturnLastError`, `ReturnSentAt`, `ReturnLastAttemptAt`
-
----
-
-### 4.8 Fluxo Gateway (Envio ao Gateway + Callback)
-
-**Fluxo**: `TicketProcessingWorker` → Envio ao Gateway → `TB_TICKET_INTERFACE` (atualiza `GatewaySendStatus`) → Recebimento de Callback → `TB_TICKET_INTERFACE` (atualiza `CallbackStatus`)
-
-**Tabelas Envolvidas**:
-1. **TB_TICKET_INTERFACE**: 
-   - `GatewaySendStatus`: Controla envio do ticket ao gateway externo
-   - `CallbackStatus`: Controla recebimento e processamento do callback assíncrono
-   - `CallbackPayloadJson`: Armazena JSON completo do callback recebido
 
 ---
 
@@ -483,79 +441,7 @@ SELECT * FROM TB_COUNTERPARTY_FISCAL_REFERENCES
 WHERE CounterpartyIdFk = (SELECT Id FROM TB_COUNTERPARTIES WHERE BusinessDocId = '01-0107-0257-5200004');
 ```
 
-### 5.4 Ver Tickets Aguardando Processamento
-
-```sql
-SELECT 
-    Id,
-    BusinessEntity,
-    BusinessDocId,
-    PhaseCode,
-    Status,
-    AttemptCount,
-    LastError,
-    CreatedAt,
-    UpdatedAt
-FROM TB_TICKET_INTERFACE
-WHERE Status = 'Awaiting'
-  AND AttemptCount < 5  -- MaxAttempts
-ORDER BY CreatedAt ASC;
-```
-
-### 5.5 Ver Tickets com Erro
-
-```sql
-SELECT 
-    Id,
-    BusinessEntity,
-    BusinessDocId,
-    PhaseCode,
-    Status,
-    AttemptCount,
-    LastError,
-    CreatedAt,
-    UpdatedAt
-FROM TB_TICKET_INTERFACE
-WHERE Status = 'Error'
-ORDER BY UpdatedAt DESC;
-```
-
-### 5.6 Consultar Últimos Erros de Processamento
-
-```sql
-SELECT TOP 50
-    Id,
-    BusinessEntity,
-    BusinessDocId,
-    PhaseCode,
-    Status,
-    AttemptCount,
-    LastError,
-    UpdatedAt
-FROM TB_TICKET_INTERFACE
-WHERE LastError IS NOT NULL
-ORDER BY UpdatedAt DESC;
-```
-
-### 5.7 Consultar Retornos Pendentes
-
-```sql
-SELECT 
-    Id,
-    BusinessEntity,
-    BusinessDocId,
-    PhaseCode,
-    ReturnStatus,
-    ReturnAttemptCount,
-    ReturnLastError,
-    ReturnLastAttemptAt
-FROM TB_TICKET_INTERFACE
-WHERE ReturnStatus IN ('Pending', 'Error')
-  AND ReturnAttemptCount < 5
-ORDER BY ReturnLastAttemptAt ASC NULLS FIRST;
-```
-
-### 5.8 Consultar Outbox de Functional ACK Pendente
+### 5.4 Consultar Outbox de Functional ACK Pendente
 
 ```sql
 SELECT 
@@ -572,82 +458,7 @@ WHERE Status IN ('Pending', 'Error')
 ORDER BY CreatedAt ASC;
 ```
 
-### 5.9 Consultar Outbox de Ticket Return Pendente
-
-```sql
-SELECT 
-    Id,
-    BusinessEntity,
-    BusinessDocId,
-    PhaseCode,
-    Status,
-    AttemptCount,
-    LastError,
-    CreatedAt,
-    LastAttemptAt
-FROM TB_TICKET_RETURN_OUTBOX
-WHERE Status IN ('Pending', 'Error')
-  AND AttemptCount < 5
-ORDER BY CreatedAt ASC;
-```
-
-### 5.10 Consultar Tickets por BusinessDocId (Todas as Fases)
-
-```sql
-SELECT 
-    Id,
-    BusinessEntity,
-    BusinessDocId,
-    PhaseCode,
-    Status,
-    AttemptCount,
-    ReturnStatus,
-    GatewaySendStatus,
-    CallbackStatus,
-    CreatedAt,
-    UpdatedAt
-FROM TB_TICKET_INTERFACE
-WHERE BusinessEntity = 'TCK'
-  AND BusinessDocId = '01-0107-0257-5200004'
-ORDER BY PhaseCode;
-```
-
-### 5.11 Consultar Callbacks Recebidos
-
-```sql
-SELECT 
-    Id,
-    BusinessEntity,
-    BusinessDocId,
-    PhaseCode,
-    CallbackStatus,
-    CallbackCode,
-    CallbackMessage,
-    CallbackReceivedAt
-FROM TB_TICKET_INTERFACE
-WHERE CallbackStatus = 'Received'
-  OR CallbackStatus = 'Success'
-  OR CallbackStatus = 'Error'
-ORDER BY CallbackReceivedAt DESC;
-```
-
-### 5.12 Consultar Envios ao Gateway Pendentes
-
-```sql
-SELECT 
-    Id,
-    BusinessEntity,
-    BusinessDocId,
-    PhaseCode,
-    GatewaySendStatus,
-    GatewaySendAttemptCount,
-    GatewaySendLastError,
-    GatewaySendLastAttemptAt
-FROM TB_TICKET_INTERFACE
-WHERE GatewaySendStatus IN ('Pending', 'Error')
-  AND GatewaySendAttemptCount < 5
-ORDER BY GatewaySendLastAttemptAt ASC NULLS FIRST;
-```
+Consultas específicas de tickets (aguardando processamento, com erro, retornos pendentes, outbox, callbacks, gateway): ver **[TICKETS_API.md](../TICKETS_API.md#queries-úteis)**.
 
 ---
 

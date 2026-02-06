@@ -24,7 +24,8 @@ Fluxos de negócio e processamento descritos na documentação.
 | Documento | Conteúdo |
 |-----------|----------|
 | [FILEMANAGER.md](FILEMANAGER.md) | Fluxo de upload (validação, armazenamento, opcional persistência em banco) e fluxo de download (GET por path, fileName, fileType) |
-| [database/SQLServer.Schema.md](database/SQLServer.Schema.md) | Fluxos e tabelas: cadastro/consulta de contraparte, recepção e processamento de ticket, envio de Functional ACK e Ticket Return, gateway e callback (seção 4) |
+| [TICKETS_API.md](TICKETS_API.md) | Fluxo de tickets: recepção (`POST /api/tickets`), processamento (worker), retorno (outbox), gateway e callback; máquinas de estado e queries |
+| [database/SQLServer.Schema.md](database/SQLServer.Schema.md) | Fluxos e tabelas: cadastro/consulta de contraparte, envio de Functional ACK (seção 4); para tickets ver TICKETS_API.md |
 | [FUNCTIONAL_ACK.md](FUNCTIONAL_ACK.md) | Uso do ACK em qualquer fluxo (Product, Counterparty, Ticket), fluxos atualizados |
 
 ---
@@ -37,6 +38,7 @@ Endpoints REST documentados.
 |-----------|----------|
 | [FILEMANAGER.md](FILEMANAGER.md) | POST e GET `api/filemanager/files`, body e query params, códigos de resposta |
 | [PRODUCTS_API.md](PRODUCTS_API.md) | POST/GET `api/v1/products`, GET por `masterDataId`, filtros e paginação |
+| [TICKETS_API.md](TICKETS_API.md) | POST `api/tickets`, fluxos (recepção, processamento, retorno, gateway) e queries úteis |
 
 ---
 
