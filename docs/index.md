@@ -1,3 +1,8 @@
+---
+layout: default
+title: Documentação Técnica – Microled.As400
+---
+
 # Documentação Técnica – Microled.As400
 
 Bem-vindo à documentação técnica do projeto **Microled.As400**. Este site reúne a documentação existente em Markdown de forma organizada e navegável.
