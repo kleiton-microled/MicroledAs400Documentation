@@ -185,3 +185,7 @@ Todos os envios são registrados em `TB_FUNCTIONAL_ACK_LOG`:
 - ✅ **ProductService**: Usa `IFunctionalAckDispatcher` genérico
 - ✅ **CounterpartyService**: Usa `IFunctionalAckDispatcher` genérico
 - 🔄 **TicketService**: Pode ser atualizado para usar o dispatcher genérico (opcional)
+
+---
+
+↑ [Voltar à documentação](index.md)

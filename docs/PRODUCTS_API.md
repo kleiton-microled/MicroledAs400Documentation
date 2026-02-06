@@ -80,3 +80,7 @@
   - **200 OK**: `ProductResponse`.
   - **404 NotFound**: `ProblemDetails` se não encontrado.
 
+---
+
+↑ [Voltar à documentação](index.md)
+

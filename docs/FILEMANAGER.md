@@ -117,3 +117,7 @@ GET /api/filemanager/files?path=fevereiro&fileName=exemplo.pdf&fileType=PDF
 ```
 
 Em produção (ex.: IIS), `BaseStoragePath` pode ser um caminho absoluto (ex.: `D:\IIS\microled`). A conta do Application Pool do IIS deve ter permissão de **Modify** (ou escrita e criação de subpastas) nesse diretório.
+
+---
+
+↑ [Voltar à documentação](index.md)

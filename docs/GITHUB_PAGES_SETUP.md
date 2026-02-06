@@ -75,3 +75,7 @@ Para este projeto, a **Opção 1** (links no README) é a mais simples e eficien
 - ✅ Acessível diretamente via links no README
 
 A documentação já está linkada no README principal do projeto.
+
+---
+
+↑ [Voltar à documentação](index.md)

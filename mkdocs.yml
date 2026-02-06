@@ -1,0 +1,34 @@
+# MkDocs – Documentação Microled.As400
+# Uso: pip install mkdocs mkdocs-material && mkdocs serve
+# Build: mkdocs build (saída em site/)
+
+site_name: Microled.As400 – Documentação Técnica
+site_description: Documentação técnica da API e dos fluxos Microled.As400
+site_url: https://seu-usuario.github.io/MicroledAs400Documentation/
+
+docs_dir: docs
+strict: true
+
+nav:
+  - Início: index.md
+  - Visão Geral: README.md
+  - Arquitetura:
+    - Schema SQL Server: database/SQLServer.Schema.md
+    - Functional Acknowledgement: FUNCTIONAL_ACK.md
+  - Fluxos:
+    - FileManager: FILEMANAGER.md
+    - Schema (fluxos): database/SQLServer.Schema.md
+    - Functional ACK: FUNCTIONAL_ACK.md
+  - APIs e Endpoints:
+    - FileManager: FILEMANAGER.md
+    - Products API: PRODUCTS_API.md
+  - Modelos e Payloads:
+    - FileManager: FILEMANAGER.md
+    - Products API: PRODUCTS_API.md
+    - Functional ACK: FUNCTIONAL_ACK.md
+  - Integrações:
+    - Functional ACK (Chronos): FUNCTIONAL_ACK.md
+  - Observações Técnicas:
+    - GitHub Pages: GITHUB_PAGES_SETUP.md
+    - Schema: database/SQLServer.Schema.md
+    - FileManager: FILEMANAGER.md

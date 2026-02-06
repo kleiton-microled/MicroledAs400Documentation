@@ -680,3 +680,7 @@ ORDER BY GatewaySendLastAttemptAt ASC NULLS FIRST;
 
 **Última Atualização**: Janeiro 2025  
 **Versão do Schema**: 1.0
+
+---
+
+↑ [Voltar à documentação](../index.md)

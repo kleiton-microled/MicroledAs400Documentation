@@ -1,32 +1,89 @@
-# Documentação do Projeto
+# Visão Geral – Microled.As400
 
-Este diretório contém a documentação técnica do projeto Microled.As400.
+Este diretório contém a documentação técnica do projeto **Microled.As400**. Os documentos estão organizados por tema; todo o conteúdo provém dos arquivos Markdown existentes.
 
-## Documentos Disponíveis
+**Página inicial da documentação:** [index.md](index.md)
 
-### APIs e fluxos
+---
 
-- **[FILEMANAGER.md](FILEMANAGER.md)** - FileManager: fluxo de upload/download de arquivos
-  - Visão geral e autenticação
-  - Fluxo de upload (validação, armazenamento em disco, opcional persistência em banco)
-  - Fluxo de download (GET por path, fileName, fileType)
-  - Endpoints POST e GET, body e query params, códigos de resposta
-  - Segurança (path/fileName, Base64, FileType) e configuração (BaseStoragePath, IIS)
+## Arquitetura
 
-### Banco de Dados
+Documentação de convenções, schema do banco de dados e arquitetura genérica dos módulos.
 
-- **[SQLServer.Schema.md](database/SQLServer.Schema.md)** - Documentação técnica completa do schema SQL Server
-  - Visão geral do banco de dados
-  - Convenções e padrões
-  - Documentação detalhada de todas as tabelas
-  - Relacionamentos e índices
-  - Fluxos do sistema
-  - Exemplos de queries úteis
+| Documento | Conteúdo |
+|-----------|----------|
+| [database/SQLServer.Schema.md](database/SQLServer.Schema.md) | Visão geral do banco, convenções e padrões, tabelas, relacionamentos e índices |
+| [FUNCTIONAL_ACK.md](FUNCTIONAL_ACK.md) | Arquitetura genérica do Functional Acknowledgement (context, builder, dispatcher) |
 
-## Como Contribuir
+---
+
+## Fluxos
+
+Fluxos de negócio e processamento descritos na documentação.
+
+| Documento | Conteúdo |
+|-----------|----------|
+| [FILEMANAGER.md](FILEMANAGER.md) | Fluxo de upload (validação, armazenamento, opcional persistência em banco) e fluxo de download (GET por path, fileName, fileType) |
+| [database/SQLServer.Schema.md](database/SQLServer.Schema.md) | Fluxos e tabelas: cadastro/consulta de contraparte, recepção e processamento de ticket, envio de Functional ACK e Ticket Return, gateway e callback (seção 4) |
+| [FUNCTIONAL_ACK.md](FUNCTIONAL_ACK.md) | Uso do ACK em qualquer fluxo (Product, Counterparty, Ticket), fluxos atualizados |
+
+---
+
+## APIs e Endpoints
+
+Endpoints REST documentados.
+
+| Documento | Conteúdo |
+|-----------|----------|
+| [FILEMANAGER.md](FILEMANAGER.md) | POST e GET `api/filemanager/files`, body e query params, códigos de resposta |
+| [PRODUCTS_API.md](PRODUCTS_API.md) | POST/GET `api/v1/products`, GET por `masterDataId`, filtros e paginação |
+
+---
+
+## Modelos e Payloads
+
+Estruturas de request/response e exemplos de payloads.
+
+| Documento | Conteúdo |
+|-----------|----------|
+| [FILEMANAGER.md](FILEMANAGER.md) | `UploadFileRequest`, `UploadFileResponse`, `GetFileResponse`, enum `FileType` |
+| [PRODUCTS_API.md](PRODUCTS_API.md) | Payload `commodity` (functionalDocID, commodityHeader, commodityData, packaging), `ProductResponse`, `PagedResultDto` |
+| [FUNCTIONAL_ACK.md](FUNCTIONAL_ACK.md) | Payload JSON do Functional ACK (functionalDocID, header com `ackBusinessApplication`, items) |
+
+---
+
+## Integrações
+
+Integrações com sistemas externos e gateways.
+
+| Documento | Conteúdo |
+|-----------|----------|
+| [FUNCTIONAL_ACK.md](FUNCTIONAL_ACK.md) | Integração Chronos (gateway Functional ACK v3), configuração, headers HTTP, resiliência (retry, backoff), auditoria em `TB_FUNCTIONAL_ACK_LOG` |
+
+---
+
+## Observações Técnicas
+
+Configuração, deploy e observações finais.
+
+| Documento | Conteúdo |
+|-----------|----------|
+| [GITHUB_PAGES_SETUP.md](GITHUB_PAGES_SETUP.md) | Configuração do GitHub Pages (Jekyll, índice, Wiki) |
+| [database/SQLServer.Schema.md](database/SQLServer.Schema.md) | Observações finais: performance, integridade referencial, auditoria, resiliência (seção 6) |
+| [FILEMANAGER.md](FILEMANAGER.md) | Configuração `FileStorage:BaseStoragePath`, segurança (path/fileName, Base64, FileType), IIS |
+
+---
+
+## Como contribuir
 
 Ao adicionar novas tabelas ou modificar o schema existente:
 
 1. Atualize os scripts SQL em `/scripts/sqlserver/`
-2. Atualize a documentação em `database/SQLServer.Schema.md`
+2. Atualize a documentação em [database/SQLServer.Schema.md](database/SQLServer.Schema.md)
 3. Mantenha os exemplos de queries atualizados
+
+Para outras alterações, edite o arquivo `.md` correspondente e preserve os links relativos desta página.
+
+---
+
+↑ [Voltar à documentação](index.md)
