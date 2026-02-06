@@ -20,7 +20,6 @@ Bem-vindo à documentação técnica do projeto **Microled.As400**.
 - [Tickets API (ShipmentTicket)](TICKETS_API.md)
 - [Functional Acknowledgement (Chronos)](FUNCTIONAL_ACK.md)
 - [Schema SQL Server](database/SQLServer.Schema.md)
-- [Configuração GitHub Pages](GITHUB_PAGES_SETUP.md)
 
 ---
 
