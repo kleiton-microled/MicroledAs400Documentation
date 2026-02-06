@@ -332,46 +332,19 @@ As tabelas de outbox e interface de tickets utilizam campos de status para contr
 
 ## 4. Fluxos e Tabelas Envolvidas
 
-### 4.1 Cadastro de Contraparte
+### 4.1 Fluxo de Contrapartes
 
-**Fluxo**: `POST /api/counterparties` → `CounterpartyService` → `SqlServerCounterpartyRepository`
-
-**Tabelas Envolvidas**:
-1. **TB_COUNTERPARTIES**: Grava/atualiza contraparte principal (idempotência por `BusinessDocId`)
-2. **TB_COUNTERPARTY_ADDRESSES**: Grava endereços (estratégia REPLACE ALL: deleta todos e reinsere)
-3. **TB_COUNTERPARTY_FISCAL_REFERENCES**: Grava referências fiscais (estratégia REPLACE ALL: deleta todos e reinsere)
-
-**Transação**: Todas as operações são executadas em uma única transação (commit ou rollback completo)
+Para o fluxo completo de contrapartes (cadastro, consulta e listagem), ver **[COUNTERPARTIES_API.md](../COUNTERPARTIES_API.md)**.
 
 ---
 
-### 4.2 Consulta de Contraparte
-
-**Fluxo**: `GET /api/counterparties?businessEntity=XXX&businessDocID=YYY` → `CounterpartyQueryService` → `SqlServerCounterpartyRepository`
-
-**Tabelas Envolvidas**:
-1. **TB_COUNTERPARTIES**: Busca contraparte por `(BusinessEntity, BusinessDocId)`
-2. **TB_COUNTERPARTY_ADDRESSES**: Busca endereços relacionados (JOIN via `CounterpartyIdFk`)
-3. **TB_COUNTERPARTY_FISCAL_REFERENCES**: Busca referências fiscais relacionadas (JOIN via `CounterpartyIdFk`)
-
----
-
-### 4.3 Listagem de Contrapartes
-
-**Fluxo**: `GET /api/counterparties?businessEntity=XXX` → `CounterpartyQueryService` → `SqlServerCounterpartyRepository`
-
-**Tabelas Envolvidas**:
-1. **TB_COUNTERPARTIES**: Lista contrapartes paginadas por `BusinessEntity` (ORDER BY `CreatedAt DESC`)
-
----
-
-### 4.4 Fluxo de Tickets
+### 4.2 Fluxo de Tickets
 
 Para o fluxo completo de tickets (recepção, processamento, retorno e gateway/callback), ver **[TICKETS_API.md](../TICKETS_API.md)**.
 
 ---
 
-### 4.6 Envio de Functional ACK
+### 4.3 Envio de Functional ACK
 
 **Fluxo**: `POST /api/functional-ack` → `FunctionalAckService` → `FunctionalAckOutboxRepository` → `FunctionalAckOutboxWorker` (background service)
 
@@ -387,61 +360,11 @@ Para o fluxo completo de tickets (recepção, processamento, retorno e gateway/c
 
 ## 5. Exemplos de Queries Úteis
 
-### 5.1 Buscar Contraparte por BusinessDocId
+Consultas de contrapartes (por BusinessDocId, listagem paginada, com endereços e referências fiscais): ver **[COUNTERPARTIES_API.md](../COUNTERPARTIES_API.md#queries-úteis)**.
 
-```sql
-SELECT 
-    c.Id,
-    c.BusinessDocId,
-    c.BusinessEntity,
-    c.Name,
-    c.EntityType,
-    c.Status,
-    c.CreatedAt,
-    c.UpdatedAt
-FROM TB_COUNTERPARTIES c
-WHERE c.BusinessDocId = '01-0107-0257-5200004';
-```
+Consultas específicas de tickets: ver **[TICKETS_API.md](../TICKETS_API.md#queries-úteis)**.
 
-### 5.2 Listar Contrapartes por BusinessEntity (Paginado)
-
-```sql
--- Total de registros
-SELECT COUNT(1) AS Total
-FROM TB_COUNTERPARTIES
-WHERE BusinessEntity = 'TCK';
-
--- Página de registros (exemplo: página 1, 10 itens por página)
-SELECT
-    BusinessDocId,
-    BusinessAppId,
-    BusinessEntity,
-    Name,
-    EntityType,
-    Status,
-    CreatedAt
-FROM TB_COUNTERPARTIES
-WHERE BusinessEntity = 'TCK'
-ORDER BY CreatedAt DESC
-OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;
-```
-
-### 5.3 Buscar Contraparte com Endereços e Referências Fiscais
-
-```sql
--- Contraparte principal
-SELECT * FROM TB_COUNTERPARTIES WHERE BusinessDocId = '01-0107-0257-5200004';
-
--- Endereços
-SELECT * FROM TB_COUNTERPARTY_ADDRESSES 
-WHERE CounterpartyIdFk = (SELECT Id FROM TB_COUNTERPARTIES WHERE BusinessDocId = '01-0107-0257-5200004');
-
--- Referências Fiscais
-SELECT * FROM TB_COUNTERPARTY_FISCAL_REFERENCES 
-WHERE CounterpartyIdFk = (SELECT Id FROM TB_COUNTERPARTIES WHERE BusinessDocId = '01-0107-0257-5200004');
-```
-
-### 5.4 Consultar Outbox de Functional ACK Pendente
+### 5.1 Consultar Outbox de Functional ACK Pendente
 
 ```sql
 SELECT 
@@ -457,8 +380,6 @@ WHERE Status IN ('Pending', 'Error')
   AND AttemptCount < 5
 ORDER BY CreatedAt ASC;
 ```
-
-Consultas específicas de tickets (aguardando processamento, com erro, retornos pendentes, outbox, callbacks, gateway): ver **[TICKETS_API.md](../TICKETS_API.md#queries-úteis)**.
 
 ---
 

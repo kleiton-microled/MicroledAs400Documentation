@@ -17,6 +17,7 @@ Bem-vindo à documentação técnica do projeto **Microled.As400**.
 
 - [FileManager – Fluxo e API](FILEMANAGER.md)
 - [Products API (Commodity)](PRODUCTS_API.md)
+- [Counterparties API (Contrapartes)](COUNTERPARTIES_API.md)
 - [Tickets API (ShipmentTicket)](TICKETS_API.md)
 - [Functional Acknowledgement (Chronos)](FUNCTIONAL_ACK.md)
 - [Schema SQL Server](database/SQLServer.Schema.md)

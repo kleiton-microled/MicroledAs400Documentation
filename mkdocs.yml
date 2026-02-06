@@ -17,12 +17,14 @@ nav:
     - Functional Acknowledgement: FUNCTIONAL_ACK.md
   - Fluxos:
     - FileManager: FILEMANAGER.md
+    - Counterparties API: COUNTERPARTIES_API.md
     - Tickets API: TICKETS_API.md
     - Schema (fluxos): database/SQLServer.Schema.md
     - Functional ACK: FUNCTIONAL_ACK.md
   - APIs e Endpoints:
     - FileManager: FILEMANAGER.md
     - Products API: PRODUCTS_API.md
+    - Counterparties API: COUNTERPARTIES_API.md
     - Tickets API: TICKETS_API.md
   - Modelos e Payloads:
     - FileManager: FILEMANAGER.md
