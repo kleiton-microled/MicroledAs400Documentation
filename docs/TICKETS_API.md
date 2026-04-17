@@ -16,6 +16,51 @@
 
 ---
 
+### POST `api/tickets/callback`
+
+- **Descrição**: recebe callback assíncrono do gateway externo após processamento do ticket. Atualiza o status do callback na interface de tickets.
+- **Body**: JSON do callback (payload completo armazenado em `CallbackPayloadJson`).
+- **Fluxo**: `POST /api/tickets/callback` → `TicketCallbackService` → `SqlServerTicketRepository.UpdateCallbackAsync`
+- **Tabela**: **TB_TICKET_INTERFACE** – atualiza campos `CallbackStatus`, `CallbackReceivedAt`, `CallbackPayloadJson`, `CallbackCode`, `CallbackMessage`.
+- **Respostas**: 
+  - **200 OK**: Callback recebido e processado com sucesso.
+  - **400 Bad Request**: Payload inválido ou ticket não encontrado.
+  - **404 Not Found**: Ticket não encontrado para os parâmetros fornecidos.
+  - **500 Internal Server Error**: Erro interno no processamento.
+
+**Payload de entrada** (exemplo):
+
+```json
+{
+  "businessEntity": "TCK",
+  "businessDocId": "01-0107-0257-5200004",
+  "phaseCode": 15,
+  "status": "Success",
+  "code": "200",
+  "message": "Ticket processado com sucesso",
+  "processedAt": "2025-02-06T10:30:00Z",
+  "details": {
+    "gatewayResponse": "OK",
+    "externalId": "EXT-12345"
+  }
+}
+```
+
+**Campos do payload**:
+
+| Campo | Tipo | Obrigatório | Descrição |
+|-------|------|-------------|-----------|
+| `businessEntity` | string | Sim | Código da entidade de negócio (ex: "TCK") |
+| `businessDocId` | string | Sim | Identificador único do documento de negócio |
+| `phaseCode` | integer | Sim | Código da fase do ticket (15 ou 6) |
+| `status` | string | Sim | Status do callback: "Success", "Error", "Warning" |
+| `code` | string | Não | Código do callback (ex: código de erro) |
+| `message` | string | Não | Mensagem do callback (ex: mensagem de erro ou sucesso) |
+| `processedAt` | string (ISO 8601) | Não | Data/hora em que o callback foi processado no gateway |
+| `details` | object | Não | Detalhes adicionais do callback (estrutura livre) |
+
+---
+
 ## Fluxos
 
 ### 1. Recepção de Ticket
