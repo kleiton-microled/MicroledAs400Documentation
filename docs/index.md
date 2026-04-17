@@ -20,6 +20,7 @@ Bem-vindo à documentação técnica do projeto **Microled.As400**.
 - [Counterparties API (Contrapartes)](COUNTERPARTIES_API.md)
 - [Tickets API (ShipmentTicket)](TICKETS_API.md)
 - [Functional Acknowledgement (Chronos)](FUNCTIONAL_ACK.md)
+- [Configuração da ApiGateway](INFRA-HANDOFF.md)
 - [Schema SQL Server](database/SQLServer.Schema.md)
 
 ---

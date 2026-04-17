@@ -34,5 +34,6 @@ nav:
     - Functional ACK (Chronos): FUNCTIONAL_ACK.md
   - Observações Técnicas:
     - GitHub Pages: GITHUB_PAGES_SETUP.md
+    - Configuração da ApiGateway: INFRA-HANDOFF.md
     - Schema: database/SQLServer.Schema.md
     - FileManager: FILEMANAGER.md

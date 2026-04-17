@@ -73,6 +73,7 @@ Configuração, deploy e observações finais.
 | Documento | Conteúdo |
 |-----------|----------|
 | [GITHUB_PAGES_SETUP.md](GITHUB_PAGES_SETUP.md) | Configuração do GitHub Pages (Jekyll, índice, Wiki) |
+| [INFRA-HANDOFF.md](INFRA-HANDOFF.md) | Configuração da ApiGateway |
 | [database/SQLServer.Schema.md](database/SQLServer.Schema.md) | Observações finais: performance, integridade referencial, auditoria, resiliência (seção 6) |
 | [FILEMANAGER.md](FILEMANAGER.md) | Configuração `FileStorage:BaseStoragePath`, segurança (path/fileName, Base64, FileType), IIS |
 
